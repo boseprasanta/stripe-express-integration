@@ -1,0 +1,25 @@
+{
+  "name": "stripe-express-integration",
+  "version": "1.0.0",
+  "description": "Stripe integration with express.js",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/boseprasanta/stripe-express-integration.git"
+  },
+  "keywords": [
+    "stripe",
+    "node",
+    "express",
+    "javascript"
+  ],
+  "author": "Prasanta Bose",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/boseprasanta/stripe-express-integration/issues"
+  },
+  "homepage": "https://github.com/boseprasanta/stripe-express-integration#readme"
+}
