@@ -8,10 +8,9 @@ const currencyJson = require("./country-currency")
 module.exports = {
   getCurrentEnvironment() {
     if (process.env.ENVIRONMENT === "production") {
-      return process.env.STRIPE_KEY_TF_PROD
+      return process.env.STRIPE_KEY_PROD
     }
-    return process.env.STRIPE_KEY_TF_TEST
-    // return process.env.STRIPE_KEY_PB_TEST
+    return process.env.STRIPE_KEY_TEST
   },
 
   createAccount(email) {
@@ -179,7 +178,7 @@ module.exports = {
         const kycDetailsObject = {
           business_type: "individual",
           business_profile: {
-            url: "www.truefanz.com",
+            url: "www.randomurl.com",
             mcc: "7299"
           },
           individual,
@@ -204,53 +203,7 @@ module.exports = {
       }
     })
   },
-  companyKyc(stripeId, phone, address, name, remoteAddress, owner) {
-    return new Promise(async (resolve, reject) => {
-      try {
-        const stripe = Stripe(this.getCurrentEnvironment())
-        const company = {
-          address,
-          phone,
-          name
-        }
-
-        // if (address.country === "US") {
-        //   if (ssnLastFour !== null) individual.ssn_last_4 = ssnLastFour
-        //   if (personalIdNumber !== null) individual.id_number = personalIdNumber
-        // }
-        // if (address.country === "IN") {
-        //   individual.id_number = personalIdNumber
-        //   individual.id_number_type = "PAN"
-        // }
-        // if (docs !== undefined) individual.verification = docs
-        const kycDetailsObject = {
-          business_type: "company",
-          business_profile: {
-            url: "www.truefanz.com",
-            mcc: "7299"
-          },
-          company,
-          tos_acceptance: {
-            date: Math.floor(Date.now() / 1000),
-            ip: remoteAddress // Assumes you're not using a proxy
-          },
-          settings: {
-            payouts: {
-              schedule: {
-                interval: "manual"
-              }
-            }
-          }
-        }
-        if (address.country === "IN") delete kycDetailsObject.settings
-        const stripeResponse = await stripe.accounts.update(stripeId, kycDetailsObject)
-        resolve(stripeResponse)
-      } catch (error) {
-        console.log("vendor KYC error", error)
-        reject(error)
-      }
-    })
-  },
+ 
   Payment(customer, vendor, amount, vendorAmount, currency = "usd", receiptEmail = null, description = null, statementDescriptor = null, capture = true) {
     return new Promise(async (resolve, reject) => {
       try {
@@ -271,9 +224,6 @@ module.exports = {
         if (receiptEmail !== null) opts.receipt_email = receiptEmail
         if (statementDescriptor !== null) opts.statement_descriptor = statementDescriptor
         const stripeResponse = await stripe.charges.create(opts)
-        // await stripeConnect.initiatePayment({
-        //   customer, vendor, amount, vendorAmount, currency, receiptEmail, description, statementDescriptor, capture
-        // })
         resolve(stripeResponse)
       } catch (error) {
         reject(error)
@@ -296,9 +246,6 @@ module.exports = {
         if (receiptEmail !== null) opts.receipt_email = receiptEmail
         if (statementDescriptor !== null) opts.statement_descriptor = statementDescriptor
         const stripeResponse = await stripe.charges.create(opts)
-        // await stripeConnect.initiatePayment({
-        //   customer, vendor, amount, vendorAmount, currency, receiptEmail, description, statementDescriptor, capture
-        // })
 
         const transferPromise = []
         transfers.forEach((elem) => {
@@ -335,12 +282,8 @@ module.exports = {
         }, {
           stripe_account: vendorId,
         })
-        // await stripeConnect.initiatePayment({
-        //   customer, vendor, amount, vendorAmount, currency, receiptEmail, description, statementDescriptor, capture
-        // })
         resolve(stripeResponse)
       } catch (error) {
-        // console.log(err)
         reject(error)
       }
     })
